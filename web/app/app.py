@@ -65,7 +65,6 @@ def products():
 
 app.route("/products/register", methods=("GET", "POST"))
 def register_product():
-    """Register a new product and supplier."""
 
     if request.method == "POST":
         SKU = request.form["SKU"]

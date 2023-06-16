@@ -5,9 +5,10 @@
 {% endblock %}
 
 {% block content %}
+
+<a href="{{ url_for('register_customer') }}">Register New Customer</a>
   {% for customer in customers %}
     <article class="customer">
-      <a href="{{ url_for('register_customer') }}">Register New Customer</a>
       <header>
         <div>
           <h1>{{ customer['name'] }}</h1>

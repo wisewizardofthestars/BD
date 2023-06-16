@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+
   {% for product in products %}
     <article class="post">
       <header>
@@ -13,6 +14,8 @@
           <div class="about">Supplier: {{ product['supplier_name'] }}</div>
         </div>
         <a class="action" href="{{ url_for('update_product', SKU=product['SKU']) }}">Edit</a>
+        <form action="{{ url_for('remove_product', SKU=product['SKU']) }}" method="post">
+          <button type="submit" class="remove">Remove</button>
       </header>
       <p class="body">
         Price: € {{ product['price'] }}<br>
