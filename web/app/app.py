@@ -273,13 +273,13 @@ def orders():
 def place_order():
     """Place a new order."""
     if request.method == "POST":
-        SKU = request.form["SKU"]
-        qty = request.form["qty"]
+        product_name = request.form["product_name"]
+        qty = request.form["quantity"]
 
         error = None
 
-        if not SKU:
-            error = "Product SKU is required."
+        if not product_name:
+            error = "Product name is required."
 
         if not qty:
             error = "Quantity is required."
@@ -294,33 +294,42 @@ def place_order():
                 with conn.cursor(row_factory=namedtuple_row) as cur:
                     cur.execute(
                         """
-                        SELECT price
+                        SELECT price, SKU
                         FROM product
-                        WHERE SKU = %(SKU)s;
+                        WHERE name = %(product_name)s;
                         """,
-                        {"SKU": SKU},
+                        {"product_name": product_name},
                     )
-                    product_price = cur.fetchone()["price"]
-                    total_price = float(product_price) * int(qty)
+                    product = cur.fetchone()
+                    if product is None:
+                        error = "Product not found."
+                    else:
+                        product_price = product["price"]
+                        SKU = product["SKU"]
+                        total_price = float(product_price) * int(qty)
 
-                    cur.execute(
-                        """
-                        INSERT INTO contains (order_no, SKU, qty, total_price)
-                        VALUES (
-                            (SELECT MAX(order_no) + 1 FROM orders),
-                            %(SKU)s,
-                            %(qty)s,
-                            %(total_price)s
-                        );
-                        """,
-                        {
-                            "SKU": SKU,
-                            "qty": qty,
-                            "total_price": total_price,
-                        },
-                    )
-                conn.commit()
-            return redirect(url_for("orders"))
+                        cur.execute(
+                            """
+                            INSERT INTO contains (order_no, SKU, qty, total_price)
+                            VALUES (
+                                (SELECT MAX(order_no) + 1 FROM orders),
+                                %(SKU)s,
+                                %(qty)s,
+                                %(total_price)s
+                            );
+                            """,
+                            {
+                                "SKU": SKU,
+                                "qty": qty,
+                                "total_price": total_price,
+                            },
+                        )
+                    conn.commit()
+
+            if error is not None:
+                flash(error)
+            else:
+                return redirect(url_for("orders"))
 
     return render_template("orders/place.html")
 
