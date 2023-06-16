@@ -13,11 +13,9 @@ from psycopg.rows import namedtuple_row
 from psycopg_pool import ConnectionPool
 
 
-# postgres://{user}:{password}@{hostname}:{port}/{database-name}
 DATABASE_URL = "postgres://db:db@postgres/db"
 
 pool = ConnectionPool(conninfo=DATABASE_URL)
-# the pool starts connecting immediately.
 
 dictConfig(
     {
@@ -47,7 +45,6 @@ log = app.logger
 @app.route("/", methods=("GET",))
 @app.route("/products", methods=("GET",))
 def products():
-    """Show all products and suppliers."""
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
             products = cur.execute(
@@ -112,7 +109,6 @@ def register_product():
 
 @app.route("/products/<string:SKU>/remove", methods=("POST",))
 def remove_product(SKU):
-    """Remove a product and supplier."""
 
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
@@ -127,11 +123,9 @@ def remove_product(SKU):
 
     return redirect(url_for("products"))
 
-#b) Alterar preços de produtos e respectivas descrições
 
 @app.route("/products/<string:SKU>/update", methods=("GET", "POST"))
 def update_product(SKU):
-    """Update product prices and descriptions."""
 
     if request.method == "POST":
         price = request.form["price"]
@@ -333,11 +327,6 @@ def place_order():
 
     return render_template("orders/place.html")
 
-
-@app.route("/ping", methods=("GET",))
-def ping():
-    log.debug("ping!")
-    return jsonify({"message": "pong!", "status": "success"})
 
 
 if __name__ == "__main__":
