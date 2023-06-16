@@ -5,13 +5,14 @@
 {% endblock %}
 
 {% block content %}
+  <a href="{{ url_for('place_order') }}" class="btn">Place Order</a> 
   {% for order in orders %}
     <article class="order">
       <header>
         <div>
-          <h1>Order ID: {{ order['order_id'] }}</h1>
-          <div>Product: {{ order['product_name'] }}</div>
-          <div>Quantity: {{ order['quantity'] }}</div>
+          <h1>Order ID: {{ order['order_no'] }}</h1>
+          <div>Product: {{ order['name'] }}</div>
+          <div>Quantity: {{ order['qty'] }}</div>
           <div>Total Price: € {{ order['total_price'] }}</div>
         </div>
       </header>
